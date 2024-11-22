@@ -15,6 +15,15 @@ namespace ExpenseTracker.Services
         {
             ArgumentNullException.ThrowIfNull(expense);
 
+            if (expense.Amount <= 0)
+            {
+                throw new ArgumentException("Expense amount must be greater than 0.", nameof(expense));
+            }
+            if (string.IsNullOrWhiteSpace(expense.Category))
+            {
+                throw new ArgumentException("Expense category cannot be empty.", nameof(expense));
+            }
+
             _expenses.Add(expense);
         }
 
@@ -37,6 +46,13 @@ namespace ExpenseTracker.Services
         {
             try
             {
+                // Ensure the directory exists
+                var directory = Path.GetDirectoryName(filePath);
+                if (directory != null && !Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+
                 var json = JsonSerializer.Serialize(_expenses, new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText(filePath, json);
                 Console.WriteLine("Expenses saved successfully.");
@@ -54,7 +70,10 @@ namespace ExpenseTracker.Services
             {
                 if (File.Exists(filePath))
                 {
+                    Console.WriteLine($"Reading file: {filePath}");
                     var json = File.ReadAllText(filePath);
+                    Console.WriteLine($"Loaded JSON:\n{json}");
+
                     var expenses = JsonSerializer.Deserialize<List<Expense>>(json);
                     if (expenses != null)
                     {
@@ -62,7 +81,19 @@ namespace ExpenseTracker.Services
                         _expenses.AddRange(expenses);
                         Console.WriteLine("Expenses loaded successfully");
                     }
+                    else
+                    {
+                        Console.WriteLine("No valid expenses found in the JSON.");
+                    }
                 }
+                else
+                {
+                    Console.WriteLine($"File does not exist: {filePath}");
+                }
+            }
+            catch (JsonException jsonEx)
+            {
+                Console.WriteLine($"Failed to parse expenses from file: {jsonEx.Message}");
             }
             catch (Exception ex)
             {
