@@ -2,36 +2,14 @@
 using ExpenseTracker.Services;
 
 // File path for saving/loading expenses
-//string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "expenses.json");
-//string filePath = "./expenses.json";
 string filePath = Path.Combine(AppContext.BaseDirectory, "../../../expenses.json");
 Console.WriteLine($"Using file path: {Path.GetFullPath(filePath)}");
-
-
-//Console.WriteLine($"Current working directory: {Environment.CurrentDirectory}");
-
 
 // Create an instance of ExpenseService
 var expenseService = new ExpenseService();
 
 // Load expenses from the file
 expenseService.LoadExpenses(filePath);
-
-// default expenses for testing
-//expenseService.AddExpense(new Expense
-//{
-//    Amount = 50,
-//    Category = "Food",
-//    Date = DateTime.Now,
-//    Notes = "Lunch"
-//});
-//expenseService.AddExpense(new Expense
-//{
-//    Amount = 20,
-//    Category = "Transport",
-//    Date = DateTime.Now,
-//    Notes = "Bus fare"
-//});
 
 Console.WriteLine("Welcome to the Expense Tracker App!");
 
@@ -67,7 +45,7 @@ while (isRunning)
     }
 }
 
-// ShowMenu()
+// Show Menu of options
 void ShowMenu()
 {
     Console.WriteLine("\n=====================");
@@ -81,6 +59,7 @@ void ShowMenu()
     Console.Write("=====================\nEnter your choice: ");
 }
 
+// Add an expense to list of expenses
 void AddExpense(ExpenseService expenseService)
 {
     try
@@ -138,6 +117,7 @@ void DisplayExpenses(ExpenseService expenseService)
 }
 
 // helper function to select an Expense
+//  used for EditExpense and Delete Expense
 int SelectExpense(ExpenseService expenseService)
 {
     var expenses = expenseService.GetExpenses();
